@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>list</title>
+  <link rel="icon" href="/favicon-1682067265620.ico">
+  <link rel="stylesheet" href="/bootstrap.min.css">
+  <link rel="stylesheet" href="/bootstrap-switch-button.min.css">
+  <style>
+    body {
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div>
+    <header>
+      <div class="form-horizontal">
+        <div class="form-group">
+          <label class="col-sm-1 control-label">
+            PUB_ENV
+          </label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" name="PUB_ENV" v-model="pub_env" value=""> ALL
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="PUB_ENV" v-model="pub_env" value="PUB"> PUB
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="PUB_ENV" v-model="pub_env" value="FIN"> FIN
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="PUB_ENV" v-model="pub_env" value="GOV"> GOV
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">
+            VPC_ENV
+          </label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" name="VPC_ENV" v-model="vpc_env" value=""> ALL
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="VPC_ENV" v-model="vpc_env" value="VPC"> VPC
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="VPC_ENV" v-model="vpc_env" value="Classic"> Classic
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">
+            BETA_ENV
+          </label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" name="BETA_ENV" v-model="beta_env" value=""> ALL
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="BETA_ENV" v-model="beta_env" value="Beta"> Beta
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="BETA_ENV" v-model="beta_env" value="Real"> Real
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">
+            IS_Upgraded
+          </label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" name="IS_Upgraded" v-model="is_modify" value=""> ALL
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="IS_Upgraded" v-model="is_modify" value="0"> No Upgrade
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="IS_Upgraded" v-model="is_modify" value="1"> Upgraded
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-1 control-label">
+            Region
+          </label>
+          <div class="col-sm-10">
+            <label class="radio-inline">
+              <input type="radio" name="Region" v-model="region" value=""> ALL
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="Region" v-model="region" value="KR"> KR
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="Region" v-model="region" value="JP"> JP
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="Region" v-model="region" value="SG"> SG
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="Region" v-model="region" value="DE"> DE
+            </label>
+            <label class="radio-inline">
+              <input type="radio" name="Region" v-model="region" value="US"> US
+            </label>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main>
+      <div class="panel panel-default">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>#</th>
+            <th>Host</th>
+            <th>Project</th>
+            <th>Region</th>
+            <th>IP</th>
+            <th>PUB_ENV</th>
+            <th>VPC_ENV</th>
+            <th>BETA_ENV</th>
+            <th>is_Upgraded</th>
+            <th>Delete</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="(list, index) in lists">
+            <th scope="row">{{index + 1}}</th>
+            <td @click="selectHost">{{list.host}}</td>
+            <td class="form-inline">
+              <input type="text" class="form-control" style="width: 70%" :value="list.project" @change="modifyProject(list, $event)">
+            </td>
+            <td class="form-inline">
+              <input type="text" class="form-control" style="width: 70%" v-model="list.region">
+              <button class="btn btn-success" @click="modifyRegion(list)">save</button>
+            </td>
+            <td>{{list.ip}}</td>
+            <td>{{list.pub_env}}</td>
+            <td>{{list.vpc_env}}</td>
+            <td>{{list.beta_env}}</td>
+            <td>
+              <button v-if="!!list.is_modify" key="modified" @click="upgradeChange(list)" class="btn btn-success">已修改</button>
+              <button v-else key="unModify" @click="upgradeChange(list)" class="btn btn-danger">未修改</button>
+            </td>
+            <td>
+              <button @click="deleteHandler(list)" class="btn btn-danger">删除</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.4/jquery.js"></script>
+<script src="/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap-switch-button@1.1.0/dist/bootstrap-switch-button.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/1.3.5/axios.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+  const app = new Vue({
+    el: '#app',
+    data: {
+      all: true,
+      vpc_env: '',
+      beta_env: '',
+      pub_env: '',
+      is_modify: '',
+      region: '',
+      lists: [],
+      selection: null,
+    },
+    watch: {
+      'all': function (val) {
+        if (val) {
+          this.vpc_env = '';
+          this.beta_env = '';
+          this.pub_env = '';
+        } else {
+          this.vpc_env = 'VPC';
+          this.beta_env = 'Beta';
+          this.pub_env = 'PUB';
+        }
+      },
+    },
+    mounted() {
+      this.selection = window.getSelection();
+      this.getList();
+      this.$watch(
+        function () {
+          return this.vpc_env + this.beta_env + this.pub_env + this.is_modify + this.region;
+        },
+        function () {
+          this.getList();
+        }
+      )
+    },
+    methods: {
+      selectHost(event) {
+        const textNode = event.target.childNodes[0];
+        const range = document.createRange();
+
+        this.selection.removeAllRanges();
+        range.setStart(textNode, 0);
+        range.setEnd(textNode, textNode.length);
+        this.selection.addRange(range);
+      },
+      getList() {
+        axios
+          .get('/getList', {
+            params: {
+              vpc_env: this.vpc_env,
+              beta_env: this.beta_env,
+              pub_env: this.pub_env,
+              is_modify: this.is_modify,
+              region: this.region,
+            }
+          })
+          .then((res) => {
+            console.info(res);
+            this.lists = res.data.list;
+          })
+      },
+      upgradeChange(item) {
+        axios
+          .patch('/patchModify', {
+            host: item.host,
+            is_modify: !item.is_modify,
+          })
+          .then(() => {
+            this.getList();
+          })
+      },
+      deleteHandler(item) {
+        axios
+          .delete('/deleteItem', {
+            params: {
+              host: item.host
+            }
+          })
+          .then(() => {
+            this.getList();
+            alert('deleted!');
+          })
+      },
+      modifyProject(item, event) {
+        axios
+          .post('/modifyProject', {
+            project: event.target.value,
+            host: item.host,
+          })
+          .then(() => {
+            this.getList();
+            alert('project saved!');
+          })
+      },
+      modifyRegion(item) {
+        axios
+          .post('/modifyRegion', {
+            region: item.region,
+            host: item.host,
+          })
+          .then(() => {
+            this.getList();
+            alert('region saved!');
+          })
+      }
+    }
+  });
+</script>
+</body>
+</html>
